@@ -3,3 +3,4 @@ fabric
 feedparser
 beautifulsoup4
 ipython
+mysqlclient

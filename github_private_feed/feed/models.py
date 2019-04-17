@@ -18,20 +18,22 @@ class GithubUser(models.Model):
 class Repository(models.Model):
     name = models.CharField(max_length=64, blank=True, null=True)
     desc = models.CharField(blank=True, max_length=255, default='')
-    main_language = models.CharField(max_length=32)
+    main_language = models.CharField(max_length=32, blank=True, null=True)
     star_count = models.IntegerField(default=0)
     issues_count = models.IntegerField(default=0)
     update = models.DateTimeField(blank=True, null=True)
 
 
 class Event(models.Model):
-    user = models.ForeignKey(GithubUser)
-    event_type = models.IntegerField(choices=FEED_CID.FEED_EVENT_CHOICES)
-    event_id = models.IntegerField(blank=True, null=True)
-    repository = models.ForeignKey(Repository)
+    user = models.ForeignKey(GithubUser, null=True, on_delete=models.SET_NULL)
+    event_type = models.IntegerField(blank=True, null=True, choices=FEED_CID.FEED_EVENT_CHOICES)
+    event_id = models.BigIntegerField(blank=True, null=True)
+    repository = models.ForeignKey(Repository, null=True, on_delete=models.SET_NULL)
     create = models.DateTimeField(blank=True, null=True)
 
 
+"""
 class UserStar(models.Model):
     user = models.ForeignKey(GithubUser)
     repository = models.ForeignKey(Repository)
+"""

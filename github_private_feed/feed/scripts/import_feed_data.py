@@ -15,8 +15,8 @@ FEED_URL = "https://github.com/silegon.private.atom?token=AAmybFO4OaArmKriu87VVo
 import json
 from bs4 import BeautifulSoup
 
-#from feed.models import GithubUser, Repository, Event
-#from feed.cid import FEED_EVENT_QUERY_DICT
+from feed.models import GithubUser, Repository, Event
+from feed.cid import FEED_EVENT_QUERY_DICT
 
 def test_parser():
     d = feedparser.parse(FEED_URL)
@@ -41,7 +41,7 @@ def test_parser():
 def parse_entry_html(entry_html):
     soup = BeautifulSoup(entry_html)
     try:
-        repo_desc = soup.find("div",class_="repo-description").p
+        repo_desc = str(soup.find("div",class_="repo-description").p)
     except:
         repo_desc = ""
 
@@ -55,7 +55,7 @@ def parse_entry_html(entry_html):
     len_extra = len(extra)
 
     star = '0'
-    issues = ""
+    issues = '0'
     if len_extra == 2:
         star = extra[0].text
         issues = extra[1].text.split()[0]
@@ -103,7 +103,7 @@ def parse_feed():
         }
         parse_result_dict = parse_entry_html(entry.summary)
         entry_dict.update(parse_result_dict)
-        print(entry_dict)
+        #print(entry_dict)
         feed_list.append(entry_dict)
     return feed_list
 
@@ -112,34 +112,39 @@ def generate_data(feed_list):
     """
     {'username': 'manucorporat', 'user_id': '127379', 'avatar': 'https://avatars3.githubusercontent.com/u/127379', 'event': 'ForkEvent', 'event_id': '8891521610', 'repo_desc': <p>A modular minifier, built on top of the PostCSS ecosystem.</p>, 'repo_update_str': 'Updated Apr 16', 'repo_update_time': datetime.datetime(2019, 4, 16, 0, 0), 'event_time_str': '2019-01-15T17:37:49Z', 'event_time': datetime.datetime(2019, 1, 15, 17, 37, 49), 'language': 'CSS', 'repo_name': 'cssnano/cssnano', 'star': '3k', 'star_count': 3000, 'issues': '7'}
     """
+    Repository.objects.all().delete()
+    Event.objects.all().delete()
     for feed_item in feed_list:
 
         user_id = feed_item['user_id']
-        github_user, created = GithubUser.objects.get_or_create(user_id=user_id)
+        github_user, created = GithubUser.objects.get_or_create(uid=user_id)
         if created:
             github_user.avatar = feed_item['avatar']
             github_user.username = feed_item['username']
             github_user.save()
 
         repo_name = feed_item['repo_name']
-        repository, created = Repository.objects.get_or_create(repo_name=repo_name)
+        repository, created = Repository.objects.get_or_create(name=repo_name)
         if created:
+            desc = feed_item['repo_desc']
             repository.desc = feed_item['repo_desc']
-            repository.main_language = feed_item['language']
+            repository.main_language = feed_item.get('language', '')
             repository.star_count = feed_item['star_count']
             repository.issues_count = feed_item['issues']
             repository.update = feed_item['repo_update_time']
             repository.save()
 
-        event, created = Event.objects.get_or_create(event_id=feed_item['event_id'])
+        event_id = feed_item['event_id']
+        event, created = Event.objects.get_or_create(event_id=event_id)
         if created:
             event.user = github_user
             event.repository = repository
             event.create = feed_item['event_time']
             event.event_type = FEED_EVENT_QUERY_DICT[feed_item['event']]
+            event.save()
 
 
 if __name__ == "__main__":
-    feed_list = parse_feed()
-    #generate_data(feed_list)
     #test_parser()
+    feed_list = parse_feed()
+    generate_data(feed_list)
