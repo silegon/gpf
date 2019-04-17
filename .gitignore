@@ -1,0 +1,9 @@
+*.pyc
+*.swp
+*.json
+log/
+__pycache__
+local_settings.py
+celerybeat.pid
+fabfile.py
+static_root/
