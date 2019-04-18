@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xml:lang="en-US">
+  <id>tag:github.com,2008:/silegon</id>
+  <link type="text/html" rel="alternate" href="https://github.com/silegon"/>
+  <link type="application/atom+xml" rel="self" href="https://github.com/silegon.private.atom?token=AAmybFO4OaArmKriu87VVo2ls6yEH5mfks66wszowA=="/>
+  <title>Private Feed for silegon</title>
+  <updated>2019-04-15T17:38:38Z</updated>
+
+  {% for event in events %}
+  <entry>
+  <id>tag:github.com,2008:{{event.get_event_type_display}}/{{event.event_id}}</id>
+  <published>{{event.create|date:"Y-m-d\TH:i:s\Z"}}</published>
+  <updated>{{event.create|date:"Y-m-d\TH:i:s\Z"}}</updated>
+  <link type="text/html" rel="alternate" href="https://github.com/{{event.repository.name}}"/>
+
+    <title type="html">
+        {{event.user.username}}{% if event.event_type == 0 %} created a repository{% endif %} {{event.repository.name}}
+    </title>
+    <author>
+    <name>{{event.user.username}}</name>
+      <email></email>
+      <uri>https://github.com/{{event.user.username}}</uri>
+    </author>
+    <media:thumbnail height="30" width="30" url="{{event.user.avatar}}?s=30&amp;v=4"/>
+    <content type="html">
+        &lt;div class=&quot;repo&quot;&gt;&lt;div class=&quot;body&quot;&gt;
+        &lt;!-- {% if event.event_type == 0 %}create{% endif %} --&gt;
+&lt;div class=&quot;d-flex flex-items-baseline border-bottom border-gray py-3&quot;&gt;
+    &lt;span class=&quot;mr-3&quot;&gt;
+    &lt;a class=&quot;d-inline-block&quot; href=&quot;/{{event.user.username}}&quot; rel=&quot;noreferrer&quot;&gt;&lt;img class=&quot;avatar&quot; src=&quot;{{event.user.avatar}}?s=64&amp;amp;v=4&quot; width=&quot;32&quot; height=&quot;32&quot; alt=&quot;@{{event.user.username}}&quot;&gt;&lt;/a&gt;
+&lt;/span&gt;
+
+  &lt;div class=&quot;d-flex flex-column width-full&quot;&gt;
+        &lt;div class=&quot;d-flex flex-items-baseline&quot;&gt;
+          &lt;div&gt;
+          &lt;a class=&quot;link-gray-dark no-underline text-bold wb-break-all d-inline-block&quot; href=&quot;/{{event.user.username}}&quot; rel=&quot;noreferrer&quot;&gt;{{event.user.username}}&lt;/a&gt;
+            
+            created a
+            repository
+            
+            &lt;a class=&quot;link-gray-dark no-underline text-bold wb-break-all d-inline-block&quot; href=&quot;/{{event.repository.name}}&quot; rel=&quot;noreferrer&quot;&gt;{{event.repository.name}}&lt;/a&gt;
+            &lt;span class=&quot;f6 text-gray-light no-wrap ml-1&quot;&gt;
+            &lt;relative-time datetime=&quot;{{event.create|date:"Y-m-d\TH:i:s\Z"}}&quot;&gt;{{event.create|date:"M d, Y"}}&lt;/relative-time&gt;
+            &lt;/span&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+
+    &lt;div class=&quot;Box p-3 mt-2&quot;&gt;
+      &lt;div&gt;
+        &lt;div class=&quot;f4 lh-condensed text-bold text-gray-dark&quot;&gt;
+        &lt;a class=&quot;link-gray-dark no-underline text-bold wb-break-all d-inline-block&quot; href=&quot;/{{event.repository.name}}&quot; rel=&quot;noreferrer&quot;&gt;{{event.repository.name}}&lt;/a&gt;
+        &lt;/div&gt;
+
+          &lt;div class=&quot;dashboard-break-word text-gray mt-1 repo-description&quot;&gt;
+          {{ event.repository.desc }}
+          &lt;/div&gt;
+
+          &lt;p class=&quot;f6 text-gray mt-2 mb-0&quot;&gt;
+          &lt;span&gt;Updated {{event.repository.update|date:"M d"}}&lt;/span&gt;
+          &lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;
+    </content>
+  </entry>
+  {% endfor %}
+</feed>
